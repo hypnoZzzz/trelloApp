@@ -1,4 +1,5 @@
 import requests
+from read import read
 from collections import Counter
 
 
@@ -51,11 +52,14 @@ def bloodhound():
         column_name = input('В какую колонку переместить задачу? ')
         column_data = requests.get(base_url.format('boards') + '/' + board_id + '/lists',
                                    params=auth_params).json()
+
         for column in column_data:
             if column['name'] == column_name:
                 requests.put(base_url.format('cards') + '/' + task_id + '/idList',
                              data={'value': column['id'], **auth_params})
-                break
+
+                user_enter_list.clear()
+            break
 
 
     elif len(user_enter_list)>1:
@@ -77,15 +81,15 @@ def bloodhound():
                                     params=auth_params).json()
         for elem in carryover:
             carryover_elem = elem
-        for task in column_tasks:
-            if task['id'] == carryover_elem['id']:
-                task_id = task['id']
-                break
-            if task_id:
-                break
+            for task in column_tasks:
+                if task['id'] == carryover_elem['id']:
+                    task_id = task['id']
+                    break
+                if task_id:
+                    break
 
-    for column in column_data:
-        if column['name'] == column_name:
-            requests.put(base_url.format('cards') + '/' + task_id + '/idList',
-                         data={'value': column['id'], **auth_params})
-            break
+        for column in column_data:
+            if column['name'] == column_name:
+                requests.put(base_url.format('cards') + '/' + task_id + '/idList',
+                            data={'value': column['id'], **auth_params})
+                break
